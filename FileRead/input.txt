@@ -1,0 +1,12 @@
+Grand_Forks 34
+ Devils_lake 36
+ Fargo 35
+ Whapeton 34
+ Jamestown 36
+ Langdon 27
+ Bismarck 35
+ Minot 39
+ Garrison 38
+ Williston 32
+ Dickenson 38
+ Hettinger 36

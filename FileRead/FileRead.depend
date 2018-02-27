@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1519765203 source:f:\fileread\main.c
+	<dirent.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<pthread.h>
+
