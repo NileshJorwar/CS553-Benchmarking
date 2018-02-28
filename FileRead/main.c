@@ -56,7 +56,9 @@ int performQP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "QP", 1, time, time, time);
+		double gigaflops = (double) (((ITR * 5.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "QP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	if (threadsNumber == 2) {
@@ -77,7 +79,10 @@ int performQP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "QP", 2, time, time, time);
+		//Performing 5 operations; 5 ops are multiplied by iterations
+		double gigaflops = (double) (((ITR * 5.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "QP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	if (threadsNumber == 4) {
@@ -98,7 +103,9 @@ int performQP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "QP", 4, time, time, time);
+		double gigaflops = (double) (((ITR * 5.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "QP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	return 0;
@@ -120,7 +127,9 @@ int performHP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "HP", 1, time, time, time);
+		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "HP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	if (threadsNumber == 2) {
@@ -141,7 +150,9 @@ int performHP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "HP", 2, time, time, time);
+		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "HP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	if (threadsNumber == 4) {
@@ -162,7 +173,9 @@ int performHP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "HP", 4, time, time, time);
+		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "HP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	return 0;
@@ -184,7 +197,10 @@ int performDP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "DP", 1, time, time, time);
+		//double gigaflops =(double)(ITR*2)/(time*1000000000.0);
+		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "DP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	if (threadsNumber == 2) {
@@ -205,7 +221,10 @@ int performDP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "DP", 2, time, time, time);
+		//double gigaflops =(double)(ITR*2)/(time*1000000000.0);
+		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "DP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	if (threadsNumber == 4) {
@@ -226,7 +245,10 @@ int performDP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "DP", 4, time, time, time);
+		//double gigaflops =(double)(ITR*2)/(time*1000000000.0);
+		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "DP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	return 0;
@@ -248,7 +270,9 @@ int performSP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "SP", 1, time, time, time);
+		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "SP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	if (threadsNumber == 2) {
@@ -269,7 +293,9 @@ int performSP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "SP", 2, time, time, time);
+		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "SP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	if (threadsNumber == 4) {
@@ -290,7 +316,9 @@ int performSP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		printf("Computation Time %f\n", time);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%f\n", "SP", 4, time, time, time);
+		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "SP", threadsNumber, gigaflops,
+				0.0, 100);
 		printf("---------------------------------------------\n");
 	}
 	return 0;
@@ -298,14 +326,10 @@ int performSP(char* precOp, char* threadsCount, FILE* fout) {
 void* computeSP(void* arg) {
 	long long *x = (long long*) arg;
 	long long v = *x;
-	int computeValue1 = 1000;
-	int computeValue2 = 2000;
+	int computeValue1 = 10000;
+	int computeValue2 = 20000;
 	for (long long z = 0; z < v; z++) {
 		computeValue1 = computeValue1 * computeValue2 / computeValue2;
-		if (z == (v - 1)) {
-			computeValue1 = (int) v / 10000 + computeValue2;
-		}
-
 	}
 	printf("Computation %d\n", computeValue1);
 	printf("---------------------------------------------\n");
@@ -314,14 +338,10 @@ void* computeSP(void* arg) {
 void* computeDP(void* arg) {
 	long long *x = (long long*) arg;
 	long long v = *x;
-	double computeValue1 = 1.0;
-	double computeValue2 = 2.0;
+	double computeValue1 = 10000.0;
+	double computeValue2 = 20000.0;
 	for (long long z = 0; z < v; z++) {
 		computeValue1 = computeValue1 * computeValue2 / computeValue2;
-		if (z == (v - 1)) {
-			computeValue1 = (double) v / 10000 + computeValue2;
-		}
-
 	}
 	printf("Computation %.2f\n", computeValue1);
 	printf("---------------------------------------------\n");
@@ -330,13 +350,10 @@ void* computeDP(void* arg) {
 void* computeHP(void* arg) {
 	long long *x = (long long*) arg;
 	long long v = *x;
-	short computeValue1 = 1000;
-	short computeValue2 = 2000;
+	short computeValue1 = 10;
+	short computeValue2 = 20;
 	for (long long z = 0; z < v; z++) {
 		computeValue1 = computeValue1 * computeValue2 / computeValue2;
-		if (z == (v - 1)) {
-			computeValue1 = (short) v / 10000 + computeValue2;
-		}
 	}
 	printf("Computation %hu\n", computeValue1);
 	printf("---------------------------------------------\n");
@@ -350,9 +367,6 @@ void* computeQP(void* arg) {
 	for (long long z = 0; z < v; z++) {
 		computeValue1 = computeValue1 - computeValue2 + 20 + (254 / 254) - 20
 				+ 1 - 1;
-		if (z == (v - 1)) {
-			computeValue1 = computeValue1 + 2;
-		}
 	}
 	printf("Computation %c\n", computeValue1);
 	printf("---------------------------------------------\n");
@@ -373,7 +387,7 @@ int main() {
 	structCounter = 0;
 	int i;
 	FILE *fout;
-	fout = fopen("cpu_SP_1thread.out.dat", "a");
+	fout = fopen("./output/cpu_SP_1thread.out.dat", "a");
 	if (fout == NULL) {
 		perror("Error Storing Data");
 		return -1;
