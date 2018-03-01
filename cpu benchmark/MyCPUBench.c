@@ -281,7 +281,7 @@ void* computeSP(void* arg) {
 	int computeValue1 = 10000;
 	int computeValue2 = 20000;
 	for (long long z = 0; z < v; z++) {
-		computeValue1 = (2147483647/65) *( 2147483647/50) / (2147483647/60) ;
+		computeValue1 = (10004/65) / ( 15000/50) / (45165/60) ;
 	}
 	printf("Computation in SP %d\n", computeValue1);
 	pthread_exit(0);
@@ -305,7 +305,7 @@ void* computeHP(void* arg) {
 	short computeValue2 = 12;
 	short computeValue3;
 	for (long long z = 0; z < v; z++) {
-		computeValue3= 100/20 +500/50+ computeValue1 / computeValue2 ;
+		computeValue3= 100/20 +500+50+ computeValue1 / computeValue2 ;
 	}
 	printf("Computation in HP %hu\n", computeValue3);
 	pthread_exit(0);
