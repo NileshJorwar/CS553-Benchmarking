@@ -5,11 +5,12 @@
 #include<pthread.h>
 #include<sys/time.h>
 #define KAXLINE 12
-#define ITR 200000
+#define ITR 200000000
 struct Operations {
 	char precisionOp[2];
 	char numberOfThreads[1];
 } op;
+//Following methods declaration for the computation of GOPS and computation time
 void* computeSP(void* arg);
 void* computeDP(void* arg);
 void* computeHP(void* arg);
@@ -18,7 +19,20 @@ int performSP(char* precOp, char* threadsCount, FILE* fout);
 int performDP(char* precOp, char* threadsCount, FILE* fout);
 int performHP(char* precOp, char* threadsCount, FILE* fout);
 int performQP(char* precOp, char* threadsCount, FILE* fout);
+void computeGops(double ops,double time,int countThread,char* precValue, FILE* fout);
 
+
+/*
+computeGops() method is used to compute the Gops of each precision HP,QP,DP.SP
+*/
+void computeGops(double ops,double time, int countThread,char* precValue, FILE* fout)
+{
+    	double gigaflops = (double) (((ITR*ops) / time) / 1000000000.0);
+		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", precValue, countThread, gigaflops,0.0, 100);
+		printf("Computation Time %f\n", time);
+		printf("Gigaflops %f\n", gigaflops);
+		printf("...........................................\n");
+}
 
 int perform(char* precOp, char* threadsCount, FILE* fout) {
 	char *p;
@@ -49,12 +63,7 @@ int performQP(char* precOp, char* threadsCount, FILE* fout) {
 		gettimeofday(&timeAfter, NULL);
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-		double gigaflops = (double) (((ITR * 5.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "QP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
+		computeGops(5,time,threadsNumber,"QP", fout);
 
 	}
 	if (threadsNumber == 2) {
@@ -74,12 +83,7 @@ int performQP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 		//Performing 5 operations; 5 ops are multiplied by iterations
-		double gigaflops = (double) (((ITR * 5.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "QP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
+		computeGops(5,time,threadsNumber,"QP", fout);
 
 	}
 	if (threadsNumber == 4) {
@@ -98,13 +102,7 @@ int performQP(char* precOp, char* threadsCount, FILE* fout) {
 		gettimeofday(&timeAfter, NULL);
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-		double gigaflops = (double) (((ITR * 5.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "QP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
-
+		computeGops(5,time,threadsNumber,"QP", fout);
 	}
 	return 0;
 }
@@ -122,13 +120,7 @@ int performHP(char* precOp, char* threadsCount, FILE* fout) {
 		gettimeofday(&timeAfter, NULL);
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "HP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
-
+		computeGops(5,time,threadsNumber,"HP", fout);
 	}
 	if (threadsNumber == 2) {
 		pthread_t pid[threadsNumber];
@@ -146,12 +138,7 @@ int performHP(char* precOp, char* threadsCount, FILE* fout) {
 		gettimeofday(&timeAfter, NULL);
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "HP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
+		computeGops(5,time,threadsNumber,"HP", fout);
 
 	}
 	if (threadsNumber == 4) {
@@ -170,12 +157,7 @@ int performHP(char* precOp, char* threadsCount, FILE* fout) {
 		gettimeofday(&timeAfter, NULL);
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "HP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
+		computeGops(5,time,threadsNumber,"HP", fout);
 
 	}
 	return 0;
@@ -194,12 +176,7 @@ int performDP(char* precOp, char* threadsCount, FILE* fout) {
 		gettimeofday(&timeAfter, NULL);
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "DP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
+		computeGops(5,time,threadsNumber,"DP", fout);
 
 	}
 	if (threadsNumber == 2) {
@@ -218,12 +195,7 @@ int performDP(char* precOp, char* threadsCount, FILE* fout) {
 		gettimeofday(&timeAfter, NULL);
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "DP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
+		computeGops(5,time,threadsNumber,"DP", fout);
 
 	}
 	if (threadsNumber == 4) {
@@ -242,14 +214,7 @@ int performDP(char* precOp, char* threadsCount, FILE* fout) {
 		gettimeofday(&timeAfter, NULL);
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-
-		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "DP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
-
+		computeGops(5,time,threadsNumber,"DP", fout);
 	}
 	return 0;
 }
@@ -269,13 +234,7 @@ int performSP(char* precOp, char* threadsCount, FILE* fout) {
 		gettimeofday(&timeAfter, NULL);
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "SP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
-
+		computeGops(5,time,threadsNumber,"SP", fout);
 	}
 	if (threadsNumber == 2) {
 		pthread_t pid[threadsNumber];
@@ -293,13 +252,7 @@ int performSP(char* precOp, char* threadsCount, FILE* fout) {
 		gettimeofday(&timeAfter, NULL);
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-
-		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "SP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
+		computeGops(5,time,threadsNumber,"SP", fout);
 	}
 	if (threadsNumber == 4) {
 		pthread_t pid[threadsNumber];
@@ -318,13 +271,7 @@ int performSP(char* precOp, char* threadsCount, FILE* fout) {
 		double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 				- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
 
-		double gigaflops = (double) (((ITR * 2.0) / time) / 1000000000.0);
-		fprintf(fout, "%s\t%d\t%f\t%f\t%d\n", "SP", threadsNumber, gigaflops,
-				0.0, 100);
-		printf("Computation Time %f\n", time);
-		printf("Gigaflops %f\n", gigaflops);
-		printf("...........................................\n");
-
+		computeGops(5,time,threadsNumber,"SP", fout);
 	}
 	return 0;
 }
@@ -334,10 +281,9 @@ void* computeSP(void* arg) {
 	int computeValue1 = 10000;
 	int computeValue2 = 20000;
 	for (long long z = 0; z < v; z++) {
-		computeValue1 = computeValue1 * computeValue2 / computeValue2;
+		computeValue1 = (2147483647/65) *( 2147483647/50) / (2147483647/60) ;
 	}
 	printf("Computation in SP %d\n", computeValue1);
-
 	pthread_exit(0);
 }
 void* computeDP(void* arg) {
@@ -346,7 +292,7 @@ void* computeDP(void* arg) {
 	double computeValue1 = 10000.0;
 	double computeValue2 = 20000.0;
 	for (long long z = 0; z < v; z++) {
-		computeValue1 = computeValue1 * computeValue2 / computeValue2;
+		computeValue1 = 15000+12000+1400+12000+10000000000.0 / 1000.0 ;
 	}
 	printf("Computation in DP %.2f\n", computeValue1);
 
@@ -355,24 +301,29 @@ void* computeDP(void* arg) {
 void* computeHP(void* arg) {
 	long long *x = (long long*) arg;
 	long long v = *x;
-	short computeValue1 = 10;
-	short computeValue2 = 20;
+	short computeValue1 = 600;
+	short computeValue2 = 12;
+	short computeValue3;
 	for (long long z = 0; z < v; z++) {
-		computeValue1 = computeValue1 * computeValue2 / computeValue2;
+		computeValue3= 100/20 +500/50+ computeValue1 / computeValue2 ;
 	}
-	printf("Computation in HP %hu\n", computeValue1);
+	printf("Computation in HP %hu\n", computeValue3);
 	pthread_exit(0);
 }
 void* computeQP(void* arg) {
 	long long *x = (long long*) arg;
 	long long v = *x;
 	char computeValue1 = 'z';
-	char computeValue2 = 'a';
+	char computeValue2 = 10;
+	char computeValue3 ;
+	/*
+	No of operations are 5 because casting also took place in the below operations which counts to two and addition
+	of integers equals to 4 which is again caste hence operations count equals to 5
+	*/
 	for (long long z = 0; z < v; z++) {
-		computeValue1 = computeValue1 - computeValue2 + 20 + (254 / 254) - 20
-				+ 1 - 1;
+		computeValue3 = computeValue1 - computeValue2 - 4;
 	}
-	printf("Computation in QP %c\n", computeValue1);
+	printf("Computation in QP %c\n", computeValue3);
 	pthread_exit(0);
 }
 
