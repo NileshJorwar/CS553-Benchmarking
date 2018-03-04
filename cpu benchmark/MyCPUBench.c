@@ -280,8 +280,15 @@ void* computeSP(void* arg) {
 	long long v = *x;
 	int computeValue1 = 10000;
 	int computeValue2 = 20000;
+	int result=0;
+		/*
+	No of operations =5
+	1 z increments
+	3 addition
+	1 division
+    */
 	for (long long z = 0; z < v; z++) {
-		computeValue1 = (10004/65) / ( 15000/50) / (45165/60) ;
+		result = (computeValue1+computeValue2) / (computeValue1-computeValue2) + (2000) ;
 	}
 	printf("Computation in SP %d\n", computeValue1);
 	pthread_exit(0);
@@ -289,12 +296,19 @@ void* computeSP(void* arg) {
 void* computeDP(void* arg) {
 	long long *x = (long long*) arg;
 	long long v = *x;
-	double computeValue1 = 10000.0;
-	double computeValue2 = 20000.0;
+		double computeValue1 = 550.450;
+	double computeValue2 = 990.05;
+	double result=0;
+    	/*
+	No of operations =5
+	1 z increments
+	3 addition
+	1 division
+    */
 	for (long long z = 0; z < v; z++) {
-		computeValue1 = 15000+12000+1400+12000+10000000000.0 / 1000.0 ;
+		result = (computeValue1+computeValue2) / (computeValue1-computeValue2) + (450.12) ;
 	}
-	printf("Computation in DP %.2f\n", computeValue1);
+	printf("Computation in DP %.2f\n", result);
 
 	pthread_exit(0);
 }
@@ -304,8 +318,14 @@ void* computeHP(void* arg) {
 	short computeValue1 = 600;
 	short computeValue2 = 12;
 	short computeValue3;
+	/*
+	No of operations =5
+	1 z increments
+	3 addition
+	1 division
+    */
 	for (long long z = 0; z < v; z++) {
-		computeValue3= 100/20 +500+50+ computeValue1 / computeValue2 ;
+				computeValue3= 100 +500+50+ computeValue1 / computeValue2 ;
 	}
 	printf("Computation in HP %hu\n", computeValue3);
 	pthread_exit(0);
@@ -317,11 +337,14 @@ void* computeQP(void* arg) {
 	char computeValue2 = 10;
 	char computeValue3 ;
 	/*
-	No of operations are 5 because casting also took place in the below operations which counts to two and addition
-	of integers equals to 4 which is again caste hence operations count equals to 5
-	*/
+	No of operations =5
+	2 cast
+	1 subtraction
+	1 z increments
+	1 final cast
+    */
 	for (long long z = 0; z < v; z++) {
-		computeValue3 = computeValue1 - computeValue2 - 4;
+		computeValue3 = computeValue1 - computeValue2 ;
 	}
 	printf("Computation in QP %c\n", computeValue3);
 	pthread_exit(0);
