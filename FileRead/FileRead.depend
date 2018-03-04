@@ -1,8 +1,17 @@
 # depslib dependency file v1.0
-1519765203 source:f:\fileread\main.c
+1519793682 source:f:\fileread\main.c
 	<dirent.h>
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	<pthread.h>
+	<sys/time.h>
+
+1520125920 source:f:\fileread\mycpubench.c
+	<dirent.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<pthread.h>
+	<sys/time.h>
 
