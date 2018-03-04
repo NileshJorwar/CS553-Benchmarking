@@ -104,8 +104,9 @@ int readWriteByteSequential() {
 	double itr = ITR;
 	double bffr = BUFFERSIZE;
 	if (blockSz == 1) {
-		latency = time / 1000000;
-		printf("\nLatency: %lld\n", latency);
+        printf("Time:%f\n",time);
+		latency = time * 1000000;
+		printf("\nLatency: %lld microseconds\n", latency);
 	} else {
 		double throughput = (((1.0 * itr * bffr) / time) / (1.0 * bffr));
 		printf("\nThrouhput:%f\n", throughput);
