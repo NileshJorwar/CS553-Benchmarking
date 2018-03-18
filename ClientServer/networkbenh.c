@@ -5,7 +5,7 @@
 #include <string.h>
 #include<pthread.h>
 #define PORT 8080
-#define BUFFERSIZE 1000000//1073741824
+#define BUFFERSIZE 1073741824
 #define ITR 100
 
 struct mem_segment_thread {
@@ -79,9 +79,10 @@ void* clientHandler(void *arg) {
     int block=atoi(rwblocksize);
     printf("Block Size:%d\n",block);
     //pthread_mutex_lock(&lock);
-    for(int i=0;i<ITR;i++)
+    
+	for(int i=0;i<ITR;i++)
     {
-        while(t_start<=t_end)
+        while(t_start<t_end)
         {
                 send(sock , &workload[t_start] , block , 0 );
                 t_start=t_start+block;
