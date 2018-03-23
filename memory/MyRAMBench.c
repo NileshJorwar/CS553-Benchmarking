@@ -5,7 +5,8 @@
 #include<pthread.h>
 #include<sys/time.h>
 #include<time.h>
-#define BUFFERSIZE 1000000000
+#define BUFFERSIZE 1073741824
+#define BUFFERSIZEBYTE 100000000
 #define ITR 100
 struct mem_segment_thread {
 	long long start;
@@ -17,7 +18,7 @@ char rwblocksize[12]; //Block Size
 char rwthreads[5]; // Thread Count
 char stringBlockSize[12]; //Block Size in characters
 int noOfRuns; // Iterations
-long long int latency;
+double latency;
 int blockSz;
 int threads_count;
 char *workloadCopy;
@@ -34,7 +35,7 @@ int readWriteByteSequential();
 
 void readWrite() {
 
-	printf("Block Size: %s\n", rwblocksize);
+	//printf("Block Size: %s\n", rwblocksize);
 	printf("Access Type: %s\n", rwaccess);
 	printf("No of Threads: %s\n", rwthreads);
 	printf("Block Size in Integer: %d\n", blockSz);
@@ -62,31 +63,61 @@ int readWriteByteSequential() {
 	pthread_t pid[threads_count];
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
+	if(blockSz==1)
+		{
+		if (threads_count == 1) {
 
-	if (threads_count == 1) {
+			struct_mem_thread[0].start = 0;
+			struct_mem_thread[0].end = BUFFERSIZEBYTE;
+		}
 
-		struct_mem_thread[0].start = 0;
-		struct_mem_thread[0].end = BUFFERSIZE;
+		if (threads_count == 2) {
+
+			struct_mem_thread[0].start = 0;
+			struct_mem_thread[0].end = BUFFERSIZEBYTE / 2;
+			struct_mem_thread[1].start = (BUFFERSIZEBYTE / 2);
+			struct_mem_thread[1].end = BUFFERSIZEBYTE;
+
+		}
+		if (threads_count == 4) {
+
+			struct_mem_thread[0].start = 0;
+			struct_mem_thread[0].end = BUFFERSIZEBYTE / 4;
+			struct_mem_thread[1].start = (BUFFERSIZEBYTE / 4);
+			struct_mem_thread[1].end = BUFFERSIZEBYTE / 2;
+			struct_mem_thread[2].start = BUFFERSIZEBYTE / 2;
+			struct_mem_thread[2].end = BUFFERSIZEBYTE / (4 / 3.0);
+			struct_mem_thread[3].start = BUFFERSIZEBYTE / (4 / 3.0);
+			struct_mem_thread[3].end = BUFFERSIZEBYTE;
+		}
 	}
+	else{
+		if (threads_count == 1) {
 
-	if (threads_count == 2) {
+			struct_mem_thread[0].start = 0;
+			struct_mem_thread[0].end = BUFFERSIZE;
+		}
 
-		struct_mem_thread[0].start = 0;
-		struct_mem_thread[0].end = BUFFERSIZE / 2;
-		struct_mem_thread[1].start = (BUFFERSIZE / 2);
-		struct_mem_thread[1].end = BUFFERSIZE;
+		if (threads_count == 2) {
 
-	}
-	if (threads_count == 4) {
+			struct_mem_thread[0].start = 0;
+			struct_mem_thread[0].end = BUFFERSIZE / 2;
+			struct_mem_thread[1].start = (BUFFERSIZE / 2);
+			struct_mem_thread[1].end = BUFFERSIZE;
 
-		struct_mem_thread[0].start = 0;
-		struct_mem_thread[0].end = BUFFERSIZE / 4;
-		struct_mem_thread[1].start = (BUFFERSIZE / 4);
-		struct_mem_thread[1].end = BUFFERSIZE / 2;
-		struct_mem_thread[2].start = BUFFERSIZE / 2;
-		struct_mem_thread[2].end = BUFFERSIZE / (4 / 3.0);
-		struct_mem_thread[3].start = BUFFERSIZE / (4 / 3.0);
-		struct_mem_thread[3].end = BUFFERSIZE;
+		}
+		if (threads_count == 4) {
+
+			struct_mem_thread[0].start = 0;
+			struct_mem_thread[0].end = BUFFERSIZE / 4;
+			struct_mem_thread[1].start = (BUFFERSIZE / 4);
+			struct_mem_thread[1].end = BUFFERSIZE / 2;
+			struct_mem_thread[2].start = BUFFERSIZE / 2;
+			struct_mem_thread[2].end = BUFFERSIZE / (4 / 3.0);
+			struct_mem_thread[3].start = BUFFERSIZE / (4 / 3.0);
+			struct_mem_thread[3].end = BUFFERSIZE;
+		}
+	
 	}
 	struct timeval timeNow, timeAfter;
 	gettimeofday(&timeNow, NULL);
@@ -104,16 +135,24 @@ int readWriteByteSequential() {
 	double itr = ITR;
 	double bffr = BUFFERSIZE;
 	if (blockSz == 1) {
-        printf("Time:%f\n",time);
-		latency = time * 1000000;
-		printf("\nLatency: %lld microseconds\n", latency);
+		latency = (time * 1000000)/1e8;
+		double theoLatency=0.0004;
+		printf("\nLatency: %f microseconds \n", latency);
+		printf("Theoretical Latency: %f microseconds \n", theoLatency);
+		fprintf(outputFile, "%s\t%s\t%s\t%f\t%f\t%f\n", rwaccess, rwthreads,
+                                stringBlockSize, latency, theoLatency, (latency/theoLatency)*100);
 	} else {
 		double throughput = (((1.0 * itr * bffr) / time) / (1.0 * bffr));
-		printf("\nThrouhput:%f\n", throughput);
+		double theo1=(double)((2133*2*64*2)/8);
+        double theoratical=(double)(theo1/1e3);
+        printf("\nTheo Value: %f\n",theoratical);
+        double eff=(double)(throughput/theoratical)*100;
+		printf("Throughput:%f\n", throughput);
 		printf("Computation Time:%f\n", time);
+		printf("Efficiency: %f\n",eff);
 		printf("Writing to the output file!!!!!!\n");
-		fprintf(outputFile, "%s\t%s\t%s\t%f\t%f\t%d\n", rwaccess, rwthreads,
-				stringBlockSize, throughput, 0.0, 100);
+		fprintf(outputFile, "%s\t%s\t%s\t%f\t%f\t%f\n", rwaccess, rwthreads,
+                                stringBlockSize, throughput, theoratical, eff);
 	}
 	fclose(outputFile);
 	return 0;
@@ -127,9 +166,8 @@ void* readWriteRWR(void *arg) {
 	long long int random_var;
 	if (blockSz == 1) {
 		noOfRuns = 1;
-		t_start = t_start / 10;
-		t_end = t_end / 10;
 	}
+	
 	//printf("Start and end: %lld\t%lld\n\n", t_start, t_end);
 	for (int i = 0; i < noOfRuns; i++) {
 		int j = t_start;
@@ -149,9 +187,7 @@ void* readWriteRWR(void *arg) {
 			}
 		}
 
-	} // For Loop
-	  //printf("Element at : %c %c", workload[0], workloadCopy[0]);
-
+	} 
 	pthread_exit(0);
 }
 void readFileData() {
@@ -162,7 +198,7 @@ void readFileData() {
 
 	if (inputFile == NULL) {
 		perror("Error Storing Data");
-		return -1;
+		return (void*)-1;
 	}
 
 	int i = 0;
@@ -213,12 +249,14 @@ int main(int argc, char **argv) {
 	else if (blockSz == 10000000)
 		strcpy(stringBlockSize, "10MB");
 	printf("Block Size in B,KB,MB: %s\n", stringBlockSize);
-	//memset(workload,"ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rand() % 26],BUFFERSIZE);
 	/*Another way to write workload using for loop*/
 
+	memset(workload,"ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rand() % 26],BUFFERSIZE);
+	/*
 	for (int i = 0; i < BUFFERSIZE; i++) {
 		workload[i] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rand() % 26];
 	}
+	*/
 	readWrite();
 	free(workloadCopy);
 	free(workload);

@@ -1,1 +1,4 @@
-Workload Concurrency BlockSize MyRAMBenchValue TheoreticalValue MyRAMBenchEfficiency
+Workload Concurrency BlockSize MyRAMBenchValue TheoreticalValue MyRAMBenchEfficiency
+
+RWR	1	1KB	1.949889	68.256000	2.856729
+RWR	1	1KB	1.992567	68.256000	2.919255

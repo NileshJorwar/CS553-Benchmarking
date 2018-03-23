@@ -1,9 +1,0 @@
-# depslib dependency file v1.0
-1519933570 source:c:\users\niles\appdata\local\lxss\home\nilesh\pa1\cs553-pa1\memory\memorybench\main.c
-	<dirent.h>
-	<stdio.h>
-	<stdlib.h>
-	<string.h>
-	<pthread.h>
-	<sys/time.h>
-
