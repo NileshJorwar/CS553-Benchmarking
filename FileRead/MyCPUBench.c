@@ -3,9 +3,10 @@
 #include<stdlib.h>
 #include<string.h>
 #include<pthread.h>
+#include<immintrin.h>
 #include<sys/time.h>
 #define KAXLINE 12
-#define ITR 2000000000
+#define ITR 1000000000000
 struct Operations {
 	char precisionOp[10];
 	char numberOfThreads[5];
@@ -24,20 +25,28 @@ int performQP(char* precOp, char* threadsCount);
 void computeGops(double ops, double time, int countThread, char* precValue);
 
 /*
- computeGops() method is used to compute the Gops of each precision HP,QP,DP.SP
+ computeGops() method is used to compute the Gops of each operation HP,QP,DP.SP
  */
-void computeGops(double ops, double time, int countThread, char* precValue) { //Output file writing
+void computeGops(double ops, double time, int countThread, char* precValue) { 
+	//Output file writing
 	FILE* outputFile;
-	outputFile = fopen(fileWrite, "a");
+	outputFile = fopen(fileWrite, "a+");
 	if (outputFile == NULL) {
 		perror("Error Opening File");
-		//return -1;
+		//return (void*)-1;
 	}
-	double gigaflops = (double) (((ITR * ops) / time) / 1000000000.0);
-	fprintf(outputFile, "%s\t%d\t%f\t%f\t%d\n", precValue, countThread,
-			gigaflops, 0.0, 100);
-	printf("Computation Time %f\n", time);
-	printf("Gigaflops %f\n", gigaflops);
+
+	double gigaflops = (double) (((ITR ) / time) / 1000000000.0);
+    //double theo1=(double)((2.3*2*ops));
+    double theoretical=(double)((2.3*2*ops));
+    double eff=(double)(gigaflops/theoretical)*100;	
+    printf("Theoretical Value: %f\n",theoretical);
+    printf("Computation Time: %f\n", time);
+	printf("Gigaflops: %f\n", gigaflops);
+	printf("Efficiency: %f\n",eff);
+    printf("Writing to the output file!!!!!!\n");
+	fprintf(outputFile, "%s\t%d\t%f\t%f\t%f\n", precValue, countThread,
+			gigaflops, theoretical, eff);
 	printf("...........................................\n");
 	fclose(outputFile);
 }
@@ -83,7 +92,7 @@ int performQP(char* precOp, char* threadsCount) {
 	gettimeofday(&timeAfter, NULL);
 	double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 			- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-	computeGops(5, time, threadsNumber, "QP");
+	computeGops(128, time, threadsNumber, "QP");
 
 	return 0;
 }
@@ -114,7 +123,7 @@ int performHP(char* precOp, char* threadsCount) {
 	gettimeofday(&timeAfter, NULL);
 	double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 			- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-	computeGops(5, time, threadsNumber, "HP");
+	computeGops(64, time, threadsNumber, "HP");
 
 	return 0;
 }
@@ -145,7 +154,7 @@ int performDP(char* precOp, char* threadsCount) {
 	gettimeofday(&timeAfter, NULL);
 	double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 			- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-	computeGops(5, time, threadsNumber, "DP");
+	computeGops(16, time, threadsNumber, "DP");
 
 	return 0;
 }
@@ -176,84 +185,61 @@ int performSP(char* precOp, char* threadsCount) {
 	gettimeofday(&timeAfter, NULL);
 	double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 			- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-	computeGops(5, time, threadsNumber, "SP");
+	computeGops(32, time, threadsNumber, "SP");
 
 	return 0;
 }
 void* computeSP(void* arg) {
 	long long *x = (long long*) arg;
 	long long v = *x;
-	int computeValue1 = 10000;
-	int computeValue2 = 20000;
-	int result = 0;
-	/*
-	 No of operations =5
-	 1 z increments
-	 3 addition
-	 1 division
-	 */
-	for (long long z = 0; z < v; z++) {
-		result = (computeValue1 + computeValue2)
-				/ (computeValue1 - computeValue2) + (2000);
-	}
-	printf("Computation in SP %d\n", computeValue1);
+	__m256 computeValue1=_mm256_set_ps(1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2);
+	__m256 computeValue2=_mm256_set_ps(2.2,2.2,2.2,2.2,2.2,2.2,2.2,2.2);
+    __m256 computeValue3=_mm256_set_ps(3.2,3.2,3.2,3.2,3.2,3.2,3.2,3.2);
+
+	for (long long z = 0; z < v/(32); z++) {
+        __m256 result = _mm256_fmadd_ps(computeValue1,computeValue2,computeValue3);
+        }
+	printf("Computation in SP done\n");
 	pthread_exit(0);
 }
 void* computeDP(void* arg) {
 	long long *x = (long long*) arg;
 	long long v = *x;
-	double computeValue1 = 550.450;
-	double computeValue2 = 990.05;
-	double result = 0;
-	/*
-	 No of operations =5
-	 1 z increments
-	 3 addition
-	 1 division
-	 */
-	for (long long z = 0; z < v; z++) {
-		result = (computeValue1 + computeValue2)
-				/ (computeValue1 - computeValue2) + (450.12);
+	//printf("Itr:%lld\n",v);
+	__m256d computeValue1=_mm256_set_pd(1.2,1.2,1.2,1.2);
+	__m256d computeValue2=_mm256_set_pd(2.2,2.2,2.2,2.2);
+    __m256d computeValue3=_mm256_set_pd(3.2,3.2,3.2,3.2);
+	for (long long z = 0; z < v/(16); z++) {
+		__m256d result = _mm256_fmadd_pd(computeValue1,computeValue2,computeValue3);
+		__m256d result1 = _mm256_fmadd_pd(computeValue2,computeValue1,computeValue3);
 	}
-	printf("Computation in DP %.2f\n", result);
+	printf("Computation in DP done\n");
 
 	pthread_exit(0);
 }
 void* computeHP(void* arg) {
 	long long *x = (long long*) arg;
 	long long v = *x;
-	short computeValue1 = 600;
-	short computeValue2 = 12;
-	short computeValue3;
-	/*
-	 No of operations =5
-	 1 z increments
-	 3 addition
-	 1 division
-	 */
-	for (long long z = 0; z < v; z++) {
-		computeValue3 = 100 + 500 + 50 + computeValue1 / computeValue2;
+	__m256i computeValue1=_mm256_set_epi16(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+	__m256i computeValue2=_mm256_set_epi16(2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2);
+
+
+	for (long long z = 0; z < v/(32); z++) {
+		__m256i result = _mm256_add_epi16(computeValue1,computeValue2);
 	}
-	printf("Computation in HP %hu\n", computeValue3);
+	printf("Computation in HP done\n");
 	pthread_exit(0);
 }
 void* computeQP(void* arg) {
 	long long *x = (long long*) arg;
 	long long v = *x;
-	char computeValue1 = 'z';
-	char computeValue2 = 10;
-	char computeValue3;
-	/*
-	 No of operations =5
-	 2 cast
-	 1 subtraction
-	 1 z increments
-	 1 final cast
-	 */
-	for (long long z = 0; z < v; z++) {
-		computeValue3 = computeValue1 - computeValue2;
+	__m256i computeValue1=_mm256_set_epi8('a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a');
+	__m256i computeValue2=_mm256_set_epi8('b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b');
+
+	for (long long z = 0; z < v/(128); z++) {
+		__m256i result = _mm256_add_epi8(computeValue1,computeValue2);
 	}
-	printf("Computation in QP %c\n", computeValue3);
+	printf("Computation in QP \n");
 	pthread_exit(0);
 }
 
@@ -265,7 +251,7 @@ void readFileData() {
 
 	if (inputFile == NULL) {
 		perror("Error Storing Data");
-		//return -1;
+		//return (void*)-1;
 	}
 
 	int i = 0;
@@ -279,7 +265,7 @@ void readFileData() {
 	}
 	//printf("\nMode:%s\n",rwaccess);
 	fclose(inputFile);
-	//return NULL;
+
 }
 
 int main(int argc, char **argv) {

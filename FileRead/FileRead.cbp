@@ -11,6 +11,9 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="./cpu_DP_1thread.dat ./output/cpu_SP_1thread.out.dat" />
+				<Option host_application="bin/Debug/FileRead.exe" />
+				<Option run_host_application_in_terminal="0" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
