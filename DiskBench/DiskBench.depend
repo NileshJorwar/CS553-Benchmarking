@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1521512244 source:f:\diskbench\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	<pthread.h>
+	<sys/time.h>
+	<time.h>
+
