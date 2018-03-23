@@ -1,9 +1,10 @@
 #! /bin/bash
 k=1
+block=1
 for seek in {RWR,RWS}
 do
-	for block in {1}
-	do	
+	
+		
 		for qw in {1,2,4}  
 		do
 			touch confMemoryByte$k.slurm
@@ -18,6 +19,6 @@ do
 			echo "./MyRAMBench /$(pwd)/memory-"$seek"-"$block"-"$qw"thread.dat /$(pwd)/output/memory-RWR_RWS_Latency-1thread.out.dat" >> confMemoryByte$k.slurm
 			k=$((k+1))
 		done
-	done		
+			
 done
 

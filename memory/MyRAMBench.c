@@ -25,9 +25,9 @@ char *workloadCopy;
 char *fileRead;
 char *fileWrite;
 char tmp1[100];
-void* readWriteRWR(void* arg);
+void* readWriteRWR_RWS(void* arg);
 void readWrite();
-int readWriteByteSequential();
+int readWriteByteSequentialRandom();
 
 /*
  readWrite() to check if to perform RWR or RWS operation
@@ -35,7 +35,7 @@ int readWriteByteSequential();
 
 void readWrite() {
 
-	//printf("Block Size: %s\n", rwblocksize);
+	
 	printf("Access Type: %s\n", rwaccess);
 	printf("No of Threads: %s\n", rwthreads);
 	printf("Block Size in Integer: %d\n", blockSz);
@@ -43,14 +43,14 @@ void readWrite() {
 
 	if (strcmp(rwaccess, "RWR") == 0) {
 		printf("Read/Write:RWR\n");
-		readWriteByteSequential();
+		readWriteByteSequentialRandom();
 	}
 	if (strcmp(rwaccess, "RWS") == 0) {
 		printf("Read/Write:RWS\n");
-		readWriteByteSequential();
+		readWriteByteSequentialRandom();
 	}
 }
-int readWriteByteSequential() {
+int readWriteByteSequentialRandom() {
 	//Output file writing
 	FILE* outputFile;
 	outputFile = fopen(fileWrite, "a");
@@ -59,7 +59,7 @@ int readWriteByteSequential() {
 		return -1;
 	}
 
-	//printf("Block size and threads%d \t%d\t\n", blockSz,threads_count);
+	
 	pthread_t pid[threads_count];
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
@@ -122,7 +122,7 @@ int readWriteByteSequential() {
 	struct timeval timeNow, timeAfter;
 	gettimeofday(&timeNow, NULL);
 	for (int i = 0; i < threads_count; i++) {
-		pthread_create(&pid[i], &attr, readWriteRWR, &struct_mem_thread[i]);
+		pthread_create(&pid[i], &attr, readWriteRWR_RWS, &struct_mem_thread[i]);
 	}
 
 	for (int i = 0; i < threads_count; i++) {
@@ -136,14 +136,14 @@ int readWriteByteSequential() {
 	double bffr = BUFFERSIZE;
 	if (blockSz == 1) {
 		latency = (time * 1000000)/1e8;
-		double theoLatency=0.0004;
+		double theoLatency=0.014; // Hyperion Latency in nanoseconds
 		printf("\nLatency: %f microseconds \n", latency);
 		printf("Theoretical Latency: %f microseconds \n", theoLatency);
 		fprintf(outputFile, "%s\t%s\t%s\t%f\t%f\t%f\n", rwaccess, rwthreads,
                                 stringBlockSize, latency, theoLatency, (latency/theoLatency)*100);
 	} else {
 		double throughput = (((1.0 * itr * bffr) / time) / (1.0 * bffr));
-		double theo1=(double)((2133*2*64*2)/8);
+		double theo1=(double)((2133*2*64*2)/8);// Hyperion configuration
         double theoratical=(double)(theo1/1e3);
         printf("\nTheo Value: %f\n",theoratical);
         double eff=(double)(throughput/theoratical)*100;
@@ -158,7 +158,7 @@ int readWriteByteSequential() {
 	return 0;
 }
 
-void* readWriteRWR(void *arg) {
+void* readWriteRWR_RWS(void *arg) {
 
 	struct mem_segment_thread *x = (struct mem_segment_thread*) arg;
 	long long t_start = (*x).start;
@@ -168,18 +168,17 @@ void* readWriteRWR(void *arg) {
 		noOfRuns = 1;
 	}
 	
-	//printf("Start and end: %lld\t%lld\n\n", t_start, t_end);
 	for (int i = 0; i < noOfRuns; i++) {
 		int j = t_start;
 		if (strcmp(rwaccess, "RWS") == 0) {
-			while (j < t_end) {
+			while (j < t_end-blockSz) {
 				memcpy(&workloadCopy[j], &workload[j], blockSz);
 				j += blockSz;
 			}
 		}
 		if (strcmp(rwaccess, "RWR") == 0) {
 			srand(time(0));
-			while (j < t_end) {
+			while (j < t_end-blockSz) {
 				random_var = rand() % ((t_end - blockSz) - t_start);
 				memcpy(&workloadCopy[random_var], &workload[random_var],
 						blockSz);
@@ -252,11 +251,14 @@ int main(int argc, char **argv) {
 	/*Another way to write workload using for loop*/
 
 	memset(workload,"ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rand() % 26],BUFFERSIZE);
+
 	/*
 	for (int i = 0; i < BUFFERSIZE; i++) {
 		workload[i] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rand() % 26];
 	}
 	*/
+	/*Calls readWrite() method to perform read-write over 100 GB of data.*/
+	
 	readWrite();
 	free(workloadCopy);
 	free(workload);

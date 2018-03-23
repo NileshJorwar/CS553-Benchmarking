@@ -1,0 +1,14 @@
+greencompute-1
+Hello....
+Welcome to the world of Memory Benchmarking!!!!!!!
+Input File: //exports/home/njorwar/CS553-PA1/memory/memory-RWS-1-4thread.dat
+Output File: //exports/home/njorwar/CS553-PA1/memory/output/memory-RWR_RWS_Latency-1thread.out.dat
+Block Size in B,KB,MB: 1B
+Access Type: RWS
+No of Threads: 4
+Block Size in Integer: 1
+Thread Count in Integer: 4
+Read/Write:RWS
+
+Latency: 0.002913 microseconds 
+Theoretical Latency: 0.014000 microseconds 
