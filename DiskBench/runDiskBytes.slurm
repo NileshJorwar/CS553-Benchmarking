@@ -1,9 +1,10 @@
 #! /bin/bash
 k=1
+block=1
 for seek in {WR,RR}
 do
-	for block in {1}
-	do	
+
+		
 		for qw in {1,2,4,8,16,32,64,128}  
 		do
 			touch confDiskByte$k.slurm
@@ -18,6 +19,6 @@ do
 			echo "./MyDiskBench /$(pwd)/disk-"$seek"-"$block"-"$qw"thread.dat /$(pwd)/output/disk-RR_WR-1thread.out.dat" >> confDiskByte$k.slurm
 			k=$((k+1))
 		done
-	done		
+			
 done
 

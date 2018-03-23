@@ -9,7 +9,7 @@
 #include <asm/unistd.h>
 #define BUFFERSIZE 10737418240
 #define KBBUFFERSIZE 1073741824
-#define ITR 1
+#define ITR 100
 struct mem_segment_thread {
 	long long start;
 	long long end;
@@ -66,9 +66,8 @@ int readWriteByteSequentialAndRandom() {
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 
-
-    if(blockSz==1000){
-        printf("Threads in Disk readWriteByteSequentialAndRandom() %d\n",threads_count);
+	if(atoi(rwblocksize)==1){
+        printf("BlockSize 1KB Threads in Disk readWriteByteSequentialAndRandom() %d\n",threads_count);
         struct_mem_thread[0].start = 0;
 		struct_mem_thread[0].end = KBBUFFERSIZE/ threads_count  ;
         for(int i=1;i<threads_count;i++){
@@ -77,7 +76,7 @@ int readWriteByteSequentialAndRandom() {
             }
     }
     else{
-        printf("Threads in Disk readWriteByteSequentialAndRandom() %d\n",threads_count);
+        printf("BlockSize >1KB Threads in Disk readWriteByteSequentialAndRandom() %d\n",threads_count);
         struct_mem_thread[0].start = 0;
 		struct_mem_thread[0].end = BUFFERSIZE / threads_count  ;
         for(int i=1;i<threads_count;i++){
@@ -103,27 +102,33 @@ int readWriteByteSequentialAndRandom() {
 	double itr = ITR;
 	double bffr = BUFFERSIZE;
 	if (atoi(rwblocksize) == 1) {
-		double theoLatency=4.16*1000;
+		double theoLatency=0.5;//500 microseconds of prometheus
 		latency = (time * 1000)/totalBlocks;
 		double diskiops=totalBlocks/time;
-		double theoIOPS=75.98;
-		printf("\nLatency: %f milliseconds \n", latency);
-        printf("Theo Latency: %f milliseconds \n", theoLatency);
-        printf("Disk Latency IOPS: %f\n", diskiops);
-        printf("Disk Latency Theo IOPS: %f\n", theoIOPS);
-        fprintf(outputFile, "%s\t%s\t%s\t%f\t%f\t%f\t%f\t%f\t%f\n", rwaccess, rwthreads,
-				stringBlockSize, latency, theoLatency, (latency/theoLatency),diskiops,theoIOPS,(diskiops/theoIOPS));
+		double theoIOPS=0;
+		if (strcmp(rwaccess, "RR") == 0)
+			theoIOPS=93000;
+		if (strcmp(rwaccess, "WR") == 0)
+			theoIOPS=43000;
+		printf("\nLatency: %0.4f milliseconds \n", latency);
+        printf("Theo Latency: %0.4f milliseconds \n", theoLatency);
+        printf("Latency Efficiency :%0.4f\n", (latency/theoLatency)*100);
+		printf("Disk Latency IOPS: %0.4f\n", diskiops);
+        printf("Disk Latency Theo IOPS: %0.4f\n", theoIOPS);
+		printf("Diskiops Efficiency :%0.4f\n", (diskiops/theoIOPS)*100);
+		fprintf(outputFile, "%s\t%s\t%s\t%0.4f\t%0.4f\t%0.4f\t%0.4f\t%0.4f\t%0.4f\n", rwaccess, rwthreads,
+				stringBlockSize, latency, theoLatency, (latency/theoLatency)*100,diskiops,theoIOPS,(diskiops/theoIOPS)*100);
 
 	} else {
 		double throughput = (((1.0 * itr * bffr) / time) / (1e6));
         double theoThroughput=((double)blockSz*75.98)/1e6;
         double efficiency=(throughput/theoThroughput)*100;
-        printf("Throughput: %f\n", throughput);
-        printf("Theo Throughput: %f\n", theoThroughput);
-		printf("Computation Time:%f\n", time);
-		printf("Efficiency :%f\n", efficiency);
+        printf("Throughput: %0.4f\n", throughput);
+        printf("Theo Throughput: %0.4f\n", theoThroughput);
+		printf("Computation Time:%0.4f\n", time);
+		printf("Efficiency :%0.4f\n", efficiency);
 		printf("Writing to the output file!!!!!!\n");
-		fprintf(outputFile, "%s\t%s\t%s\t%f\t%f\t%f\n", rwaccess, rwthreads,
+		fprintf(outputFile, "%s\t%s\t%s\t%0.4f\t%0.4f\t%0.4f\n", rwaccess, rwthreads,
 				stringBlockSize, throughput, theoThroughput, efficiency);
 	}
 
@@ -161,7 +166,7 @@ void* readFromFile(void *arg) {
         printf("Sequential Read Block Size: %d\n",blockSz);
 		printf("Sequential Reading from the file...\n");
 		fseek(inputFile, j, SEEK_SET);
-		while (j < t_end) {
+		while (j < t_end-blockSz) {
 			memset(workloadCopy, '\0', blockSz);
 			fread(workloadCopy, sizeof(char), blockSz, inputFile);
 			j += blockSz;
@@ -177,7 +182,7 @@ void* readFromFile(void *arg) {
             fseek(inputFile,j,SEEK_SET);
             srand (time(0));
 
-            while(j < t_end) {
+            while(j < t_end-blockSz) {
                     memset(workloadCopy,'\0',blockSz);
                     random_var = t_start+rand() / (RAND_MAX / (t_end-t_start+1)+1);
                     fseek(inputFile,random_var,SEEK_SET);
@@ -194,7 +199,7 @@ void* readFromFile(void *arg) {
 		printf("Sequential Write Block Size: %d\n",blockSz);
 		printf("Sequential Writing to the file...\n");
 		fseek(inputFile, j, SEEK_SET);
-		while (j < t_end) {
+		while (j < t_end-blockSz) {
 			fwrite(workloadCopy, sizeof(char), blockSz, inputFile);
 			j += blockSz;
 			//printf("%d\n", j);
@@ -208,7 +213,7 @@ void* readFromFile(void *arg) {
 
 		fseek(inputFile, j, SEEK_SET);
 
-		while(j< t_end) {
+		while(j< t_end-blockSz) {
             random_var = t_start+rand() / (RAND_MAX / (t_end-t_start+1)+1);
             fseek(inputFile,random_var,SEEK_SET);
 			fwrite(workloadCopy, sizeof(char), blockSz, inputFile);
@@ -234,7 +239,8 @@ void createFile() {
 
 	struct timeval timeNow, timeAfter;
 	gettimeofday(&timeNow, NULL);
-	if(blockSz==1000)
+	
+	if(atoi(rwblocksize)==1)
     {
         long long int noOfRuns = BUFFERSIZE/10;
         printf("1 GB File in Bytes:%lld\n",noOfRuns);
@@ -259,7 +265,7 @@ void createFile() {
     gettimeofday(&timeAfter, NULL);
 	double time = (timeAfter.tv_sec + (timeAfter.tv_usec / 1000000.0))
 			- (timeNow.tv_sec + (timeNow.tv_usec / 1000000.0));
-    printf("Writing done in time: %f\n",time);
+    printf("Writing done in time: %f seconds\n",time);
 	fclose(inputFile);
 
 }
@@ -335,7 +341,7 @@ int main(int argc, char **argv) {
 	printf("Block Size in B,KB,MB: %s\n", stringBlockSize);
 	//memset(workload,"ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rand() % 26],BUFFERSIZE);
 	/*Another way to write workload using for loop*/
-	totalBlocks=(double)(BUFFERSIZE/(double)blockSz);
+	totalBlocks=(double)(KBBUFFERSIZE/(double)blockSz);
     printf("Total No of Blocks: %f\n",totalBlocks);
     if(strcmp(rwaccess, "WS") == 0 || strcmp(rwaccess, "WR") == 0)
     {
