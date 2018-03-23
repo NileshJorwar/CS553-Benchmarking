@@ -9,7 +9,7 @@
 #include <asm/unistd.h>
 #define BUFFERSIZE 10737418240
 #define KBBUFFERSIZE 1073741824
-#define ITR 100
+#define ITR 1
 struct mem_segment_thread {
 	long long start;
 	long long end;
@@ -165,7 +165,7 @@ void* readFromFile(void *arg) {
 	if (strcmp(rwaccess, "RS") == 0) {
         printf("Sequential Read Block Size: %d\n",blockSz);
 		printf("Sequential Reading from the file...\n");
-		fseek(inputFile, j, SEEK_SET);
+		fseek(inputFile, j, SEEK_CUR);
 		while (j < t_end-blockSz) {
 			memset(workloadCopy, '\0', blockSz);
 			fread(workloadCopy, sizeof(char), blockSz, inputFile);
@@ -179,16 +179,17 @@ void* readFromFile(void *arg) {
           //  printf("Randomly Read Block Size: %d\n",blockSz);
             //printf("Randomly Reading from the file...\n");
 
-            fseek(inputFile,j,SEEK_SET);
+            fseek(inputFile,j,SEEK_CUR);
             srand (time(0));
 
             while(j < t_end-blockSz) {
                     memset(workloadCopy,'\0',blockSz);
                     random_var = t_start+rand() / (RAND_MAX / (t_end-t_start+1)+1);
-                    fseek(inputFile,random_var,SEEK_SET);
+                    fseek(inputFile,random_var,SEEK_CUR);
                     fread(workloadCopy,sizeof(char), blockSz, inputFile);
                     j += blockSz;
                     //printf("%s\n",workloadCopy);
+					//printf("J%d",j);
                 }
 
 	}
@@ -198,7 +199,7 @@ void* readFromFile(void *arg) {
 		//memset(workloadCopy, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rand() % 26],atoi(rwblocksize));
 		printf("Sequential Write Block Size: %d\n",blockSz);
 		printf("Sequential Writing to the file...\n");
-		fseek(inputFile, j, SEEK_SET);
+		fseek(inputFile, j, SEEK_CUR);
 		while (j < t_end-blockSz) {
 			fwrite(workloadCopy, sizeof(char), blockSz, inputFile);
 			j += blockSz;
@@ -211,16 +212,16 @@ void* readFromFile(void *arg) {
         //printf("Ramdom Write Block Size: %d\n",blockSz);
 		//printf("Ramdomly Writing to the 10 GB of file...\n");
 
-		fseek(inputFile, j, SEEK_SET);
+		fseek(inputFile, j, SEEK_CUR);
 
 		while(j< t_end-blockSz) {
             random_var = t_start+rand() / (RAND_MAX / (t_end-t_start+1)+1);
-            fseek(inputFile,random_var,SEEK_SET);
+            fseek(inputFile,random_var,SEEK_CUR);
 			fwrite(workloadCopy, sizeof(char), blockSz, inputFile);
 			//fsync(inputFile);
 			//fflush(inputFile);
 			j =j+ blockSz;
-
+			//printf("J%d",j);
 		}
 
 	}
@@ -232,7 +233,7 @@ void* readFromFile(void *arg) {
 void createFile() {
 
     FILE* inputFile;
-	inputFile = fopen(fileWorkload, "w+");
+	inputFile = fopen(fileWorkload, "w");
 
 	char arr[] = { "abcdefghijklmnopqrstuvwxyz" };
 	//memset(workloadCopy,"ABCDEFGHIJKLMNOPQRSTUVWXYZ"[rand() % 26],atoi(rwblocksize));
